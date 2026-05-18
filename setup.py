@@ -6,7 +6,10 @@ class bdist_wheel_abi3(bdist_wheel):
     def get_tag(self):
         python, abi, plat = super().get_tag()
 
-        if python.startswith("cp") and not python.endswith("t"):
+        if python.startswith("cp"):
+            gil_enabled = getattr(sys, "_is_gil_enabled", lambda: True)()
+            if not gil_enabled:
+                return python, abi, plat
             return "cp310", "abi3", plat
 
         return python, abi, plat
